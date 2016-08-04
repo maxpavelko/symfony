@@ -12,8 +12,9 @@
 namespace Symfony\Component\Cache\Adapter;
 
 use Psr\Cache\CacheItemInterface;
-use Psr\Cache\InvalidArgumentException;
+use Psr\Cache\InvalidArgumentException as InvalidArgumentExceptionInterface;
 use Symfony\Component\Cache\CacheItem;
+use Symfony\Component\Cache\Exception\InvalidArgumentException;
 
 /**
  * @author Nicolas Grekas <p@tchwork.com>
@@ -89,6 +90,18 @@ class TagAwareAdapter implements TagAwareAdapterInterface
     /**
      * {@inheritdoc}
      */
+    public function graceItems(array $keys, $graceTime)
+    {
+        if (!is_int($graceTime) || $graceTime <= 0) {
+            throw new InvalidArgumentException(sprintf('Grace time must be a positive integer, %s given', is_int($graceTime) ? $graceTime : gettype($graceTime)));
+        }
+
+        return $this->doGetItems($keys, $graceTime);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function hasItem($key)
     {
         if ($this->deferred) {
@@ -115,7 +128,7 @@ class TagAwareAdapter implements TagAwareAdapterInterface
      */
     public function getItem($key)
     {
-        foreach ($this->getItems(array($key)) as $item) {
+        foreach ($this->doGetItems(array($keys), null) as $item) {
             return $item;
         }
     }
@@ -125,27 +138,7 @@ class TagAwareAdapter implements TagAwareAdapterInterface
      */
     public function getItems(array $keys = array())
     {
-        if ($this->deferred) {
-            $this->commit();
-        }
-        $tagKeys = array();
-
-        foreach ($keys as $key) {
-            if ('' !== $key && is_string($key)) {
-                $key = static::TAGS_PREFIX.$key;
-                $tagKeys[$key] = $key;
-            }
-        }
-
-        try {
-            $items = $this->itemsAdapter->getItems($tagKeys + $keys);
-        } catch (InvalidArgumentException $e) {
-            $this->itemsAdapter->getItems($keys); // Should throw an exception
-
-            throw $e;
-        }
-
-        return $this->generateItems($items, $tagKeys);
+        return $this->doGetItems($keys, null);
     }
 
     /**
@@ -247,7 +240,32 @@ class TagAwareAdapter implements TagAwareAdapterInterface
         $this->commit();
     }
 
-    private function generateItems($items, array $tagKeys)
+    public function doGetItems(array $keys, $graceTime)
+    {
+        if ($this->deferred) {
+            $this->commit();
+        }
+        $tagKeys = array();
+
+        foreach ($keys as $key) {
+            if ('' !== $key && is_string($key)) {
+                $key = static::TAGS_PREFIX.$key;
+                $tagKeys[$key] = $key;
+            }
+        }
+
+        try {
+            $items = $this->itemsAdapter->getItems($tagKeys + $keys);
+        } catch (InvalidArgumentExceptionInterface $e) {
+            $this->itemsAdapter->getItems($keys); // Should throw an exception
+
+            throw $e;
+        }
+
+        return $this->generateItems($items, $tagKeys);
+    }
+
+    private function generateItems($items, array $tagKeys, $graceTime = null)
     {
         $bufferedItems = $itemTags = $invalidKeys = array();
         $f = $this->createCacheItem;

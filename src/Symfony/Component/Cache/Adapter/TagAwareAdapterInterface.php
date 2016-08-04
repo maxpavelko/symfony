@@ -30,4 +30,19 @@ interface TagAwareAdapterInterface extends AdapterInterface
      * @throws InvalidArgumentException When $tags is not valid
      */
     public function invalidateTags($tags);
+
+    /**
+     * Returns cache items even they have been tag-invalidated.
+     *
+     * The isHit() method on the resulting items should return false
+     * when they have been invalidated by one of their tags.
+     *
+     * @param string[] $keys                  The keys of the items to fetch from the cache
+     * @param int      $revalidationGraceTime The number of seconds before items definitely expire
+     *
+     * @return CacheItem
+     *
+     * @throws InvalidArgumentException When $keys is not valid or when $revalidateGraceTime <= 0
+     */
+    public function graceItems(array $keys, $graceTime);
 }
