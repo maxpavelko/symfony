@@ -36,7 +36,6 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
 
     private $propertyTypeExtractor;
     private $attributesCache = array();
-    private $cache = array();
 
     public function __construct(ClassMetadataFactoryInterface $classMetadataFactory = null, NameConverterInterface $nameConverter = null, PropertyTypeExtractorInterface $propertyTypeExtractor = null)
     {
@@ -164,7 +163,7 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        return isset($this->cache[$type]) ? $this->cache[$type] : $this->cache[$type] = class_exists($type);
+        return \class_exists($type);
     }
 
     /**

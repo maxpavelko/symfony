@@ -67,14 +67,10 @@ class CustomNormalizer implements NormalizerInterface, DenormalizerInterface, Se
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        if (isset($this->cache[$type])) {
-            return $this->cache[$type];
-        }
-
         if (!class_exists($type)) {
-            return $this->cache[$type] = false;
+            return false;
         }
 
-        return $this->cache[$type] = is_subclass_of($type, 'Symfony\Component\Serializer\Normalizer\DenormalizableInterface');
+        return is_subclass_of($type, 'Symfony\Component\Serializer\Normalizer\DenormalizableInterface');
     }
 }
