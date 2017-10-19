@@ -78,16 +78,9 @@ class Type
     private $collectionValueType;
 
     /**
-     * @param string      $builtinType
-     * @param bool        $nullable
-     * @param string|null $class
-     * @param bool        $collection
-     * @param Type|null   $collectionKeyType
-     * @param Type|null   $collectionValueType
-     *
      * @throws \InvalidArgumentException
      */
-    public function __construct($builtinType, $nullable = false, $class = null, $collection = false, Type $collectionKeyType = null, Type $collectionValueType = null)
+    public function __construct(string $builtinType, bool $nullable = false, string $class = null, bool $collection = false, Type $collectionKeyType = null, Type $collectionValueType = null)
     {
         if (!in_array($builtinType, self::$builtinTypes)) {
             throw new \InvalidArgumentException(sprintf('"%s" is not a valid PHP type.', $builtinType));
@@ -101,70 +94,32 @@ class Type
         $this->collectionValueType = $collectionValueType;
     }
 
-    /**
-     * Gets built-in type.
-     *
-     * Can be bool, int, float, string, array, object, resource, null or callback.
-     *
-     * @return string
-     */
-    public function getBuiltinType()
+    public function getBuiltinType(): string
     {
         return $this->builtinType;
     }
 
-    /**
-     * Allows null value?
-     *
-     * @return bool
-     */
-    public function isNullable()
+    public function isNullable(): bool
     {
         return $this->nullable;
     }
 
-    /**
-     * Gets the class name.
-     *
-     * Only applicable if the built-in type is object.
-     *
-     * @return string|null
-     */
-    public function getClassName()
+    public function getClassName(): ?string
     {
         return $this->class;
     }
 
-    /**
-     * Is collection?
-     *
-     * @return bool
-     */
-    public function isCollection()
+    public function isCollection(): bool
     {
         return $this->collection;
     }
 
-    /**
-     * Gets collection key type.
-     *
-     * Only applicable for a collection type.
-     *
-     * @return self|null
-     */
-    public function getCollectionKeyType()
+    public function getCollectionKeyType(): ?self
     {
         return $this->collectionKeyType;
     }
 
-    /**
-     * Gets collection value type.
-     *
-     * Only applicable for a collection type.
-     *
-     * @return self|null
-     */
-    public function getCollectionValueType()
+    public function getCollectionValueType(): ?self
     {
         return $this->collectionValueType;
     }

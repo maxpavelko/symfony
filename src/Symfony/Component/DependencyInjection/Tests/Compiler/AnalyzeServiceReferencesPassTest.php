@@ -55,10 +55,10 @@ class AnalyzeServiceReferencesPassTest extends TestCase
 
         $this->assertCount(4, $edges = $graph->getNode('b')->getInEdges());
 
-        $this->assertSame($ref1, $edges[0]->getValue());
-        $this->assertSame($ref4, $edges[1]->getValue());
-        $this->assertSame($ref5, $edges[2]->getValue());
-        $this->assertSame($ref6, $edges[3]->getValue());
+        $this->assertEquals($ref1, $edges[0]->getValue());
+        $this->assertEquals($ref4, $edges[1]->getValue());
+        $this->assertEquals($ref5, $edges[2]->getValue());
+        $this->assertEquals($ref6, $edges[3]->getValue());
     }
 
     public function testProcessMarksEdgesLazyWhenReferencedServiceIsLazy()
@@ -81,7 +81,7 @@ class AnalyzeServiceReferencesPassTest extends TestCase
         $this->assertCount(1, $graph->getNode('b')->getInEdges());
         $this->assertCount(1, $edges = $graph->getNode('a')->getInEdges());
 
-        $this->assertSame($ref2, $edges[0]->getValue());
+        $this->assertEquals($ref2, $edges[0]->getValue());
         $this->assertTrue($edges[0]->isLazy());
     }
 
@@ -103,9 +103,9 @@ class AnalyzeServiceReferencesPassTest extends TestCase
         $this->assertCount(1, $graph->getNode('b')->getInEdges());
         $this->assertCount(2, $edges = $graph->getNode('c')->getOutEdges());
 
-        $this->assertSame($ref1, $edges[0]->getValue());
+        $this->assertEquals($ref1, $edges[0]->getValue());
         $this->assertFalse($edges[0]->isLazy());
-        $this->assertSame($ref2, $edges[1]->getValue());
+        $this->assertEquals($ref2, $edges[1]->getValue());
         $this->assertTrue($edges[1]->isLazy());
     }
 
@@ -125,7 +125,7 @@ class AnalyzeServiceReferencesPassTest extends TestCase
         $graph = $this->process($container);
 
         $this->assertCount(1, $refs = $graph->getNode('a')->getInEdges());
-        $this->assertSame($ref, $refs[0]->getValue());
+        $this->assertEquals($ref, $refs[0]->getValue());
     }
 
     public function testProcessDetectsReferencesFromIteratorArguments()
@@ -144,7 +144,7 @@ class AnalyzeServiceReferencesPassTest extends TestCase
         $graph = $this->process($container);
 
         $this->assertCount(1, $refs = $graph->getNode('a')->getInEdges());
-        $this->assertSame($ref, $refs[0]->getValue());
+        $this->assertEquals($ref, $refs[0]->getValue());
     }
 
     public function testProcessDetectsReferencesFromInlinedFactoryDefinitions()
